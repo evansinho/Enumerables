@@ -30,7 +30,9 @@ module Enumerable
   def my_all?
     result = true
     my_each do |item|
-        result = false if !yield(item)
+      if !yield(item)
+        result = false
+      end  
     end
     result
   end
@@ -38,9 +40,34 @@ module Enumerable
   def my_any?
     result = false
     my_each do |item|
-        result = true if yield(item)
+      if yield(item)
+        result = true
+      end  
     end
     result
   end
+
+  def my_none?
+    result = false
+    my_each do |item|
+      if !yield(item)
+        result = true
+      end
+    end
+    result
+  end
+
+  def my_count
+    return self.length unless block_given?
+    result = 0
+    my_each do |item|
+      if yield(item)
+        result += 1
+      end
+    end
+    result
+  end
+
+  
 
 end
