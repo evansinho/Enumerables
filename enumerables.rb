@@ -17,4 +17,14 @@ module Enumerable
     self
   end
 
+  def my_select
+    result = []
+    my_each do |item|
+      if yield(item)
+        result.push(item)
+      end
+    end
+    result
+  end
+
 end
