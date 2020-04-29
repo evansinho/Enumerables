@@ -68,6 +68,21 @@ module Enumerable
     result
   end
 
-  
+  def my_inject
+    count = 1
+    sum = self[0]
+    result = 0
+    while count < self.length
+      result = yield(sum, self[count])
+      sum = result
+      count += 1
+    end
+      return result
+    end
+  end
+
+  def multiply_els(array)
+    array.my_inject { |result, num| result * num }
+  end
 
 end
