@@ -134,11 +134,6 @@ end
 # puts ''
 
 # puts 'my_inject vs. inject'
-# puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum + num }
-# puts [1, 2, 3, 4, 5].inject { |sum, num| sum + num }
-# puts 'initial = 2'
-# puts [1, 2, 3, 4, 5].my_inject(2) { |sum, num| sum + num }
-# puts [1, 2, 3, 4, 5].inject(2) { |sum, num| sum + num }
 # puts 'multiplication'
 # puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum * num }
 # puts [1, 2, 3, 4, 5].inject { |sum, num| sum * num }
