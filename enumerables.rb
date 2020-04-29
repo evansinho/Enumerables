@@ -80,8 +80,9 @@ module Enumerable
   end
 
   def multiply_els(array)
-    array.inject { |result, item| result * item }
+    array.my_inject { |result, item| result * item }
   end
+  
 end
 
 # puts 'my_each vs. each'
