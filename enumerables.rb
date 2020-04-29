@@ -1,7 +1,7 @@
 module Enumerable
   def my_each
     count = 0
-    while count < self.length
+    while count < length
       yield(self[count])
       count += 1
     end
@@ -10,7 +10,7 @@ module Enumerable
 
   def my_each_with_index
     count = 0
-    while count < self.length
+    while count < length
       yield(self[count], count)
       count += 1
     end
@@ -20,9 +20,7 @@ module Enumerable
   def my_select
     result = []
     my_each do |item|
-      if yield(item)
-        result.push(item)
-      end
+      result << item if yield(item)
     end
     result
   end
@@ -30,9 +28,7 @@ module Enumerable
   def my_all?
     result = true
     my_each do |item|
-      if !yield(item)
-        result = false
-      end  
+      result = false unless yield(item)
     end
     result
   end
@@ -40,9 +36,7 @@ module Enumerable
   def my_any?
     result = false
     my_each do |item|
-      if yield(item)
-        result = true
-      end  
+      result = true if yield(item)
     end
     result
   end
@@ -50,39 +44,107 @@ module Enumerable
   def my_none?
     result = false
     my_each do |item|
-      if !yield(item)
-        result = true
-      end
+      result = true unless yield(item)
     end
-    result
   end
 
   def my_count
-    return self.length unless block_given?
+    return length unless block_given?
+
     result = 0
     my_each do |item|
-      if yield(item)
-        result += 1
-      end
+      result = true unless yield(item)
     end
     result
   end
 
-  def my_inject
-    count = 1
-    sum = self[0]
-    result = 0
-    while count < self.length
-      result = yield(sum, self[count])
-      sum = result
-      count += 1
+  def my_map(proc = nil)
+    result = []
+    my_each do |item|
+      result << if block_given?
+                  yield(item)
+                else
+                  proc.call(item)
+                end
     end
-      return result
+    result
+  end
+
+  def my_inject(initial = nil)
+    result = initial.nil? ? self[0] : initial
+    index = initial.nil? ? 1 : 0
+    self[index...length].my_each do |item|
+      result = yield(result, item)
     end
+    result
   end
 
   def multiply_els(array)
-    array.my_inject { |result, num| result * num }
+    array.inject { |result, item| result * item }
   end
-
 end
+
+# puts 'my_each vs. each'
+# [1, 2, 3, 4, 5].my_each { |item| print item * 2 }
+# puts ''
+# [1, 2, 3, 4, 5].each { |item| print item * 2 }
+# puts ''
+
+# puts 'my_each_with_index vs. each_with_index'
+# [1, 2, 3, 4, 5].my_each_with_index { |item, index| print [item, index] }
+# puts ''
+# [1, 2, 3, 4, 5].each_with_index { |item, index| print [item, index] }
+# puts ''
+
+# puts 'my_select vs. select'
+# print [1, 2, 3, 4, 5].my_select(&:even?)
+# puts ''
+# print [1, 2, 3, 4, 5].select(&:even?)
+# puts ''
+
+# puts 'my_all? vs. all?'
+# puts [1, 2, 3, 4, 5].my_all? { |num| num < 10 }
+# puts [1, 2, 3, 4, 5].all? { |num| num < 10 }
+
+# puts 'my_any? vs. any?'
+# puts [1, 2, 3, 4, 5].my_any? { |num| num > 3 }
+# puts [1, 2, 3, 4, 5].any? { |num| num > 3 }
+
+# puts 'my_none? vs. none?'
+# puts [1, 2, 3, 4, 5].my_none? { |num| num < 10 }
+# puts [1, 2, 3, 4, 5].none? { |num| num < 10 }
+
+# puts 'my_count vs. count'
+# puts [1, 2, 3, 4, 5].my_count(&:even?)
+# puts [1, 2, 3, 4, 5].my_count
+# puts [1, 2, 3, 4, 5].count(&:even?)
+# puts [1, 2, 3, 4, 5].count
+
+# puts 'my_map vs. map'
+# print [1, 2, 3, 4, 5].my_map { |num| num * 2 }
+# puts ''
+# print [1, 2, 3, 4, 5].map { |num| num * 2 }
+# puts ''
+# puts 'my_map with my_proc'
+# my_proc = proc { |num| num * 3 }
+# print [1, 2, 3, 4, 5].my_map my_proc
+# puts ''
+# puts 'my_map with a block and my_proc'
+# print [1, 2, 3, 4, 5].my_map { |num| num * 4 }.my_map my_proc
+# puts ''
+
+# puts 'my_inject vs. inject'
+# puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum + num }
+# puts [1, 2, 3, 4, 5].inject { |sum, num| sum + num }
+# puts 'initial = 2'
+# puts [1, 2, 3, 4, 5].my_inject(2) { |sum, num| sum + num }
+# puts [1, 2, 3, 4, 5].inject(2) { |sum, num| sum + num }
+# puts 'multiplication'
+# puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum * num }
+# puts [1, 2, 3, 4, 5].inject { |sum, num| sum * num }
+# puts 'initial = 2'
+# puts [1, 2, 3, 4, 5].my_inject(2) { |sum, num| sum * num }
+# puts [1, 2, 3, 4, 5].inject(2) { |sum, num| sum * num }
+
+# puts 'multiply_els'
+# puts multiply_els([2,4,5])
