@@ -3,23 +3,23 @@ module Enumerable
   def my_each
     x = 0
     return to_enum unless block_given?
-
-    while x < length
-      yield(to_a[x])
+    list = is_a?(Range) ? to_a : self
+    while x < list.length
+      yield(list[x])
       x += 1
     end
-    self
+    list
   end
 
   def my_each_with_index
     x = 0
     return to_enum unless block_given?
-
-    while x < length
-      yield(to_a[x], x)
+    list = is_a?(Range) ? to_a : self
+    while x < list.length
+      yield(list[x], x)
       x += 1
     end
-    self
+    list
   end
 
   def my_select
@@ -95,69 +95,82 @@ module Enumerable
     result
   end
 
-  def my_inject(initial = nil)
-    result = initial.nil? ? to_a[self[0]] : initial
-    index = initial.nil? ? 1 : 0
-    self[index...length].my_each do |item|
-      result = yield(result, item)
+  # def my_inject(initial = nil)
+  #   result = initial.nil? ? to_a[self[0]] : initial
+  #   index = initial.nil? ? 1 : 0
+  #   self[index...length].my_each do |item|
+  #     result = yield(result, item)
+  #   end
+  #   result
+  # end
+
+  def my_inject(*args)
+    list = is_a?(Range) ? to_a : self
+    reduce = args[0] if args[0].is_a?(Integer)
+    operator = args[0].is_a?(Symbol) ? args[0] : args[1]
+
+    if operator
+      list.my_each { |x| reduce = reduce ? reduce.send(operator, x) : x }
+      return reduce
     end
-    result
+    list.my_each { |x| reduce = reduce ? yield(reduce, x) : x }
+    reduce
   end
 
   def multiply_els(array)
-    array.my_inject { |result, item| result * item }
+    array.my_inject { |result, x| result * x }
   end
 end
 # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
 
-# puts 'my_each vs. each'
-# [1, 2, 3, 4, 5].my_each { |item| print item * 2 }
-# puts ''
-# [1, 2, 3, 4, 5].each { |item| print item * 2 }
-# puts ''
+puts 'my_each vs. each'
+[1, 2, 3, 4, 5].my_each { |item| print item * 2 }
+puts ''
+[1, 2, 3, 4, 5].each { |item| print item * 2 }
+puts ''
 
-# puts 'my_each_with_index vs. each_with_index'
-# [1, 2, 3, 4, 5].my_each_with_index { |item, index| print [item, index] }
-# puts ''
-# [1, 2, 3, 4, 5].each_with_index { |item, index| print [item, index] }
-# puts ''
+puts 'my_each_with_index vs. each_with_index'
+[1, 2, 3, 4, 5].my_each_with_index { |item, index| print [item, index] }
+puts ''
+[1, 2, 3, 4, 5].each_with_index { |item, index| print [item, index] }
+puts ''
 
-# puts 'my_select vs. select'
-# print [1, 2, 3, 4, 5].my_select(&:even?)
-# puts ''
-# print [1, 2, 3, 4, 5].select(&:even?)
-# puts ''
+puts 'my_select vs. select'
+print [1, 2, 3, 4, 5].my_select(&:even?)
+puts ''
+print [1, 2, 3, 4, 5].select(&:even?)
+puts ''
 
-# puts 'my_all? vs. all?'
-# puts [1, 2, 3, 4, 5].my_all? { |num| num < 10 }
-# puts [1, 2, 3, 4, 5].all? { |num| num < 10 }
+puts 'my_all? vs. all?'
+puts [1, 2, 3, 4, 5].my_all? { |num| num < 10 }
+puts [1, 2, 3, 4, 5].all? { |num| num < 10 }
 
-# puts 'my_any? vs. any?'
-# puts [1, 2, 3, 4, 5].my_any? { |num| num > 3 }
-# puts [1, 2, 3, 4, 5].any? { |num| num > 3 }
+puts 'my_any? vs. any?'
+puts [1, 2, 3, 4, 5].my_any? { |num| num > 3 }
+puts [1, 2, 3, 4, 5].any? { |num| num > 3 }
 
-# puts 'my_none? vs. none?'
-# puts [1, 2, 3, 4, 5].my_none? { |num| num > 3 }
-# puts [1, 2, 3, 4, 5].none? { |num| num > 3 }
+puts 'my_none? vs. none?'
+puts [1, 2, 3, 4, 5].my_none? { |num| num > 3 }
+puts [1, 2, 3, 4, 5].none? { |num| num > 3 }
 
-# puts 'my_count vs. count'
-# puts [1, 2, 3, 4, 5].my_count(&:even?)
-# puts [1, 2, 3, 4, 5].my_count
-# puts [1, 2, 3, 4, 5].count(&:even?)
-# puts [1, 2, 3, 4, 5].count
+puts 'my_count vs. count'
+puts [1, 2, 3, 4, 5].my_count(&:even?)
+puts [1, 2, 3, 4, 5].my_count
+puts [1, 2, 3, 4, 5].count(&:even?)
+puts [1, 2, 3, 4, 5].count
 
-# puts 'my_map vs. map'
-# print [1, 2, 3, 4, 5].my_map { |num| num * 2 }
-# puts ''
-# print [1, 2, 3, 4, 5].map { |num| num * 2 }
-# puts ''
+puts 'my_map vs. map'
+print [1, 2, 3, 4, 5].my_map { |num| num * 2 }
+puts ''
+print [1, 2, 3, 4, 5].map { |num| num * 2 }
+puts ''
 
-# puts 'my_inject vs. inject'
-# puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum * num }
-# puts [1, 2, 3, 4, 5].inject { |sum, num| sum * num }
-# puts 'initial = 2'
-# puts [1, 2, 3, 4, 5].my_inject(2) { |sum, num| sum * num }
-# puts [1, 2, 3, 4, 5].inject(2) { |sum, num| sum * num }
+puts 'my_inject vs. inject'
+puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum * num }
+puts [1, 2, 3, 4, 5].inject { |sum, num| sum * num }
+puts 'initial = 2'
+puts [1, 2, 3, 4, 5].my_inject(2) { |sum, num| sum * num }
+puts [1, 2, 3, 4, 5].inject(2) { |sum, num| sum * num }
 
-# puts 'multiply_els'
-# puts multiply_els([2,4,5])
+puts 'multiply_els'
+puts multiply_els([2,4,5])
