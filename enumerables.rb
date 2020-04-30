@@ -1,77 +1,102 @@
 module Enumerable
+  # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
   def my_each
-    count = 0
-    while count < length
-      yield(self[count])
-      count += 1
+    x = 0
+    return to_enum unless block_given?
+
+    while x < length
+      yield(to_a[x])
+      x += 1
     end
     self
   end
 
   def my_each_with_index
-    count = 0
-    while count < length
-      yield(self[count], count)
-      count += 1
+    x = 0
+    return to_enum unless block_given?
+
+    while x < length
+      yield(to_a[x], x)
+      x += 1
     end
     self
   end
 
   def my_select
     result = []
-    my_each do |item|
-      result << item if yield(item)
+    return to_enum unless block_given?
+
+    my_each do |x|
+      result << x if yield(x)
     end
     result
   end
 
-  def my_all?
-    result = true
-    my_each do |item|
-      result = false unless yield(item)
+  def my_all?(input = nil)
+    my_each do |x|
+      return false if block_given? && !yield(x)
+
+      if !block_given? && input.nil?
+        return false unless x
+      elsif input
+        return false
+      end
     end
-    result
+    true
   end
 
-  def my_any?
-    result = false
-    my_each do |item|
-      result = true if yield(item)
+  def my_any?(input = nil)
+    my_each do |x|
+      return false if block_given? && yield(x)
+
+      if !block_given? && input.nil?
+        return true if x
+      elsif !block_given? && input
+        return true
+      end
     end
-    result
+    false
   end
 
-  def my_none?
-    result = false
-    my_each do |item|
-      result = true unless yield(item)
+  def my_none?(input = nil)
+    my_each do |x|
+      return false if block_given? && yield(x)
+
+      if !block_given? && input.nil?
+        return false if x
+      elsif !block_given? && input
+        return false
+      end
     end
+    true
   end
 
-  def my_count
-    return length unless block_given?
-
-    result = 0
-    my_each do |item|
-      result = true unless yield(item)
+  def my_count(input = nil)
+    count = 0
+    my_each do |x|
+      if block_given? && input.nil?
+        count += 1 if yield(x)
+      elsif x && input.nil?
+        count += 1
+      elsif input.is_a?(Integer)
+        count += 1
+      end
     end
-    result
+    count
   end
 
-  def my_map(proc = nil)
+  def my_map
     result = []
-    my_each do |item|
-      result << if block_given?
-                  yield(item)
-                else
-                  proc.call(item)
-                end
+    my_each do |x|
+      return to_enum unless block_given?
+
+      result << yield(x) || result << proc.call(x) if block_given?
     end
     result
   end
 
   def my_inject(initial = nil)
-    result = initial.nil? ? self[0] : initial
+    result = initial.nil? ? to_a[self[0]] : initial
     index = initial.nil? ? 1 : 0
     self[index...length].my_each do |item|
       result = yield(result, item)
@@ -83,6 +108,7 @@ module Enumerable
     array.my_inject { |result, item| result * item }
   end
 end
+# rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
 
 # puts 'my_each vs. each'
 # [1, 2, 3, 4, 5].my_each { |item| print item * 2 }
@@ -111,8 +137,8 @@ end
 # puts [1, 2, 3, 4, 5].any? { |num| num > 3 }
 
 # puts 'my_none? vs. none?'
-# puts [1, 2, 3, 4, 5].my_none? { |num| num < 10 }
-# puts [1, 2, 3, 4, 5].none? { |num| num < 10 }
+# puts [1, 2, 3, 4, 5].my_none? { |num| num > 3 }
+# puts [1, 2, 3, 4, 5].none? { |num| num > 3 }
 
 # puts 'my_count vs. count'
 # puts [1, 2, 3, 4, 5].my_count(&:even?)
@@ -125,16 +151,8 @@ end
 # puts ''
 # print [1, 2, 3, 4, 5].map { |num| num * 2 }
 # puts ''
-# puts 'my_map with my_proc'
-# my_proc = proc { |num| num * 3 }
-# print [1, 2, 3, 4, 5].my_map my_proc
-# puts ''
-# puts 'my_map with a block and my_proc'
-# print [1, 2, 3, 4, 5].my_map { |num| num * 4 }.my_map my_proc
-# puts ''
 
 # puts 'my_inject vs. inject'
-# puts 'multiplication'
 # puts [1, 2, 3, 4, 5].my_inject { |sum, num| sum * num }
 # puts [1, 2, 3, 4, 5].inject { |sum, num| sum * num }
 # puts 'initial = 2'

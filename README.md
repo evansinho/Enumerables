@@ -11,6 +11,7 @@ In this project, you will implement your own version of Ruby’s enumerable meth
 
 - Fork the repo to your remote repository.
 - Clone or download the repository to your local machine.
+- Copy the enumerable.rb file to irb and test the methods
 
 ## Authors
 
