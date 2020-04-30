@@ -37,7 +37,7 @@ module Enumerable
 
   def my_all?(input = nil)
     my_each do |x|
-      return false if block_given? && !yield(i)
+      return false if block_given? && !yield(x)
 
       if !block_given? && input.nil?
         return false unless x
@@ -150,8 +150,8 @@ end
 # puts ''
 
 # puts 'my_all? vs. all?'
-# puts [1, 2, 3].my_all?(5)
-# puts [1, 2, 3].all?(5)
+# puts [1, 2, 3].my_all?{ |num| num * 2 }
+# puts [1, 2, 3].all?{ |num| num * 2 }
 
 # puts 'my_any? vs. any?'
 # puts %w[dog door rod blade].my_any? (/t/)
