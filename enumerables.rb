@@ -3,6 +3,7 @@ module Enumerable
   def my_each
     x = 0
     return to_enum unless block_given?
+
     list = is_a?(Range) ? to_a : self
     while x < list.length
       yield(list[x])
@@ -14,6 +15,7 @@ module Enumerable
   def my_each_with_index
     x = 0
     return to_enum unless block_given?
+
     list = is_a?(Range) ? to_a : self
     while x < list.length
       yield(list[x], x)
