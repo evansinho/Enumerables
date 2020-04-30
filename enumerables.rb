@@ -79,12 +79,12 @@ module Enumerable
     my_each do |x|
       if block_given? && input.nil?
         count += 1 if yield(x)
-      elsif x && input.nil?
-        count += 1
+      elsif x && !input.nil?
+        count += 1 if x == input
       elsif input.is_a?(Integer)
         count += 1
       else
-        count = size
+        count = length
       end
     end
     count
@@ -161,11 +161,11 @@ end
 # puts %w[dog door rod blade].my_none?(/d/)
 # puts %w[dog door rod blade].none?(/d/)
 
-# puts 'my_count vs. count'
-# puts [1, 2, 3, 4, 5].my_count(&:even?)
-# puts [1, 2, 3, 4, 5].my_count
-# puts [1, 2, 3, 4, 5].count(&:even?)
-# puts [1, 2, 3, 4, 5].count
+puts 'my_count vs. count'
+puts [1, 1, 2 ,3].my_count(1)
+puts [1, 1, 2 ,3].my_count
+puts [1, 1, 2 ,3].count(1)
+puts [1, 1, 2 ,3].count
 
 # puts 'my_map vs. map'
 # print [1, 2, 3, 4, 5].my_map { |num| num * 2 }
