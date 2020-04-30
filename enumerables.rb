@@ -161,11 +161,11 @@ end
 # puts %w[dog door rod blade].my_none?(/d/)
 # puts %w[dog door rod blade].none?(/d/)
 
-puts 'my_count vs. count'
-puts [1, 1, 2 ,3].my_count(1)
-puts [1, 1, 2 ,3].my_count
-puts [1, 1, 2 ,3].count(1)
-puts [1, 1, 2 ,3].count
+# puts 'my_count vs. count'
+# puts [1, 1, 2 ,3].my_count(1)
+# puts [1, 1, 2 ,3].my_count
+# puts [1, 1, 2 ,3].count(1)
+# puts [1, 1, 2 ,3].count
 
 # puts 'my_map vs. map'
 # print [1, 2, 3, 4, 5].my_map { |num| num * 2 }
