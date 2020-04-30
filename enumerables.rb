@@ -95,15 +95,6 @@ module Enumerable
     result
   end
 
-  # def my_inject(initial = nil)
-  #   result = initial.nil? ? to_a[self[0]] : initial
-  #   index = initial.nil? ? 1 : 0
-  #   self[index...length].my_each do |item|
-  #     result = yield(result, item)
-  #   end
-  #   result
-  # end
-
   def my_inject(*args)
     list = is_a?(Range) ? to_a : self
     reduce = args[0] if args[0].is_a?(Integer)
