@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module Enumerable
   # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
   def my_each
@@ -36,12 +37,12 @@ module Enumerable
 
   def my_all?(input = nil)
     my_each do |x|
-      return false if block_given? && !yield(x)
+      return false if block_given? && !yield(i)
 
       if !block_given? && input.nil?
         return false unless x
       elsif input
-        return false
+        return false unless input_check(x, input)
       end
     end
     true
@@ -49,12 +50,12 @@ module Enumerable
 
   def my_any?(input = nil)
     my_each do |x|
-      return false if block_given? && yield(x)
+      return true if block_given? && yield(x)
 
       if !block_given? && input.nil?
         return true if x
       elsif !block_given? && input
-        return true
+        return true if input_check(x, input)
       end
     end
     false
@@ -67,7 +68,7 @@ module Enumerable
       if !block_given? && input.nil?
         return false if x
       elsif !block_given? && input
-        return false
+        return false if input_check(x, input)
       end
     end
     true
@@ -82,6 +83,8 @@ module Enumerable
         count += 1
       elsif input.is_a?(Integer)
         count += 1
+      else
+        count = size
       end
     end
     count
@@ -110,11 +113,23 @@ module Enumerable
     reduce
   end
 
-  def multiply_els(array)
-    array.my_inject { |result, x| result * x }
+  def input_check(item, input)
+    if input.class == Regexp
+      return true if item.to_s.match(input)
+    elsif input.class == Class
+      return true if item.instance_of? input
+    elsif input.class == String || input.class == Integer || input.class == Symbol
+      return true if item == input
+    end
   end
 end
+
+def multiply_els(array)
+  array.my_inject { |result, x| result * x }
+end
+
 # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
+# rubocop:enable Metrics/ModuleLength
 
 # puts 'my_each vs. each'
 # [1, 2, 3, 4, 5].my_each { |item| print item * 2 }
@@ -135,16 +150,16 @@ end
 # puts ''
 
 # puts 'my_all? vs. all?'
-# puts [1, 2, 3, 4, 5].my_all? { |num| num < 10 }
-# puts [1, 2, 3, 4, 5].all? { |num| num < 10 }
+# puts [1, 2, 3].my_all?(5)
+# puts [1, 2, 3].all?(5)
 
 # puts 'my_any? vs. any?'
-# puts [1, 2, 3, 4, 5].my_any? { |num| num > 3 }
-# puts [1, 2, 3, 4, 5].any? { |num| num > 3 }
+# puts %w[dog door rod blade].my_any? (/t/)
+# puts %w[dog door rod blade].any? (/t/)
 
 # puts 'my_none? vs. none?'
-# puts [1, 2, 3, 4, 5].my_none? { |num| num > 3 }
-# puts [1, 2, 3, 4, 5].none? { |num| num > 3 }
+# puts %w[dog door rod blade].my_none?(/d/)
+# puts %w[dog door rod blade].none?(/d/)
 
 # puts 'my_count vs. count'
 # puts [1, 2, 3, 4, 5].my_count(&:even?)
@@ -166,4 +181,4 @@ end
 # puts [1, 2, 3, 4, 5].inject(2) { |sum, num| sum * num }
 
 # puts 'multiply_els'
-# puts multiply_els([2,4,5])
+# puts multiply_els([2, 4, 5])
