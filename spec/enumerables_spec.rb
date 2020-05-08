@@ -10,6 +10,4 @@ describe Enumerable do
       expect([1, 2, 3, 4, 5].my_each.class).to eql(Enumerator)
     end
   end
-
-  
 end
