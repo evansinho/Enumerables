@@ -22,4 +22,16 @@ describe Enumerable do
       expect([1, 2, 3, 4, 5].my_each_with_index.class).to eql(Enumerator)
     end
   end
+
+  describe 'my_select' do
+    it 'should return an array of elements that meet a specified condition' do
+      arr = [1, 2, 3, 4, 5].my_select(&:odd?)
+
+      expect(arr).to eql([1, 3, 5])
+    end
+
+    it 'should return an enum if no block is given' do
+      expect([1, 2, 3, 4, 5].my_select.class).to eql(Enumerator)
+    end
+  end
 end
