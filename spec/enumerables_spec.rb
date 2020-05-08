@@ -115,30 +115,30 @@ describe Enumerable do
     it 'When no block and no argument are given, returns `false` when one of the elementes is truthy != (nil, false)' do
       expect([nil, true, 88].my_none?).to eq(false)
     end
+
+    it 'When an array is empty and no block is given, will return `true`' do
+      expect([].my_none?).to eq(true)
+    end
+
+    it 'should return false if all elements match a regular expression' do
+      expect(%w[ant bat cat].my_none?(/t/)).to eql(false)
+    end
+
+    it 'When block is given, it evaluates the elements and returns `false` when one of them meets the condition' do
+      expect(%w[ant bat cat].my_none? { |word| word.length >= 3 }).to eq(false)
+    end
+
+    it 'When an argument and a block are given, it ignores the block and returns `false` if one of the elements meets the
+    condition in the argument' do
+      expect(%w[ant bat cat].my_none?(Numeric) { |word| word.length >= 3 }).to eq(false)
+    end
+
+    it 'raises an ArgumentError when more than one arguments are given' do
+      expect { %w[ant bat cat].my_none?(String, 1) }.to raise_error(ArgumentError)
+    end
   end
 
-  it 'When an array is empty and no block is given, will return `true`' do
-    expect([].my_none?).to eq(true)
-  end
-
-  it 'should return false if all elements match a regular expression' do
-    expect(%w[ant bat cat].my_none?(/t/)).to eql(false)
-  end
-
-  it 'When block is given, it evaluates the elements and returns `false` when one of them meets the condition' do
-    expect(%w[ant bat cat].my_none? { |word| word.length >= 3 }).to eq(false)
-  end
-
-  it 'When an argument and a block are given, it ignores the block and returns `false` if one of the elements meets the
-  condition in the argument' do
-    expect(%w[ant bat cat].my_none?(Numeric) { |word| word.length >= 3 }).to eq(false)
-  end
-
-  it 'raises an ArgumentError when more than one arguments are given' do
-    expect { %w[ant bat cat].my_none?(String, 1) }.to raise_error(ArgumentError)
-  end
-
-  describe '#my_count' do
+  describe 'my_count' do
     it 'When no block and no argument are give returns the number of elements' do
       expect([1, 2, 3, 4].my_count).to eq(4)
     end
@@ -161,7 +161,7 @@ describe Enumerable do
     end
   end
 
-  describe '#my_inject' do
+  describe 'my_inject' do
     it 'When block is given, it passes each element as an argument of the method in the block and stores
     it in the memo variable, returns the result of memo at the end' do
       expect([1, 2, 3, 2].my_inject { |memo, element| memo / element }).to eq(0)
@@ -179,6 +179,21 @@ describe Enumerable do
 
     it 'When an array is empty and no block is given, will return nil' do
       expect([].my_inject).to eq(nil)
+    end
+  end
+
+  describe 'my_map' do
+    it 'When block is given, it passes each element as an argument of the 
+    method in the block and returns a new array' do
+      expect([1, 2, 3, 2].my_map { |element| element + 2 }).to eq([3, 4, 5, 4])
+    end
+
+    it 'arguments are given, it will raise ArgumentError' do
+      expect { [1, 2, 3, 2].my_map(1, :*, 2) }.to raise_error(ArgumentError)
+    end
+
+    it 'When block is given, it will return an array with the block rules' do
+      expect([1, 2, 3, 2].my_map { |element| element + 2 }).to eq([3, 4, 5, 4])
     end
   end
 end
