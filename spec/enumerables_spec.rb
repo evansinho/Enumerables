@@ -128,7 +128,8 @@ describe Enumerable do
       expect(%w[ant bat cat].my_none? { |word| word.length >= 3 }).to eq(false)
     end
 
-    it 'When an argument and a block are given, it ignores the block and returns `false` if one of the elements meets the
+    it 'When an argument and a block are given, it ignores the block and returns `false`
+    if one of the elements meets the
     condition in the argument' do
       expect(%w[ant bat cat].my_none?(Numeric) { |word| word.length >= 3 }).to eq(false)
     end
@@ -183,7 +184,7 @@ describe Enumerable do
   end
 
   describe 'my_map' do
-    it 'When block is given, it passes each element as an argument of the 
+    it 'When block is given, it passes each element as an argument of the
     method in the block and returns a new array' do
       expect([1, 2, 3, 2].my_map { |element| element + 2 }).to eq([3, 4, 5, 4])
     end
