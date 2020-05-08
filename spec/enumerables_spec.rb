@@ -160,4 +160,25 @@ describe Enumerable do
       expect([1, 2, 3, 4].my_count(2)).to eq(1)
     end
   end
+
+  describe '#my_inject' do
+    it 'When block is given, it passes each element as an argument of the method in the block and stores
+    it in the memo variable, returns the result of memo at the end' do
+      expect([1, 2, 3, 2].my_inject { |memo, element| memo / element }).to eq(0)
+    end
+
+    it 'When block and an argument are given, it passes each element and the argument as an argument
+     of the method in the block and stores it in the memo variable, returns the result of memo at the end' do
+      expect([1, 2, 3, 2].my_inject { |memo, element| memo * element }).to eq(12)
+    end
+
+    it 'When block and two argument are given, it ignores the block and it passes each element and the argument
+    as an argument of the method provided in the second argument and returns the result ' do
+      expect([1, 2, 3, 2].my_inject(2, :+) { |memo, element| memo / element }).to eq(10)
+    end
+
+    it 'When an array is empty and no block is given, will return nil' do
+      expect([].my_inject).to eq(nil)
+    end
+  end
 end
